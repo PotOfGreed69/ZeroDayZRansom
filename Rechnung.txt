@@ -1,0 +1,22 @@
+Absender:
+Shadow Defense Systems
+Offshore-Basis 69
+Kontakt: info@shadowdefsys.systems
+
+Empfänger:
+Zer0DayZ Schatten-Waffenhändler
+Codebase 123
+Kontakt: armstrader@gmail.net
+
+Rechnungsdatum: 22. Januar 2025
+Rechnungsnummer: GDS-2025-00142
+Pos.	Beschreibung					Menge		Einzelpreis (USD)	Gesamt (USD)
+1		Raketensystem Mk. III			51				5.000,00		255.000,00
+2		Weißer-Phosphor-Streubomben		3				25.000,00		75.000,00
+3		Autonome Kampfdrone „Hawk-5“	2				45.000,00		90.000,00
+4		155-mm-Munition					20				500,00			10.000,00
+5		Wartungskit für Waffensysteme	5				2.000,00		10.000,00
+
+Zwischensumme: 440.000,00 USD
+Steuern: 	   Durch Steuerbetrug: 0
+Gesamtbetrag:  440.000,00
