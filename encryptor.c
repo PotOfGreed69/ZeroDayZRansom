@@ -3,6 +3,30 @@
 #include <locale.h>
 #include <unistd.h>
 
+
+int banner() {
+    // ASCII-Art als String-Array
+    const char* ascii_art[] = {
+        "                                                                    ",
+        ",-------.                     ,------.                   ,-------. ",
+        "`--.   /  ,---. ,--.--. ,---. |  .-.  \\  ,--,--.,--. ,--.`--.   /  ",
+        "  /   /  | .-. :|  .--'| .-. ||  |  \\  :' ,-.  | \\  '  /   /   /   ",
+        " /   `--.\\   --.|  |   ' '-' '|  '--'  /\\ '-'  |  \\   '   /   `--. ",
+        "`-------' `----'`--'    `---' `-------'  `--`--'.-'  /   `-------' ",
+        "                                                `---'              "
+    };
+
+    
+    int num_lines = sizeof(ascii_art) / sizeof(ascii_art[0]);
+
+    
+    for (int i = 0; i < num_lines; i++) {
+        printf("%s\n", ascii_art[i]);
+    }
+
+    return 0;
+}
+
 int fileExists(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file != NULL) {
@@ -38,26 +62,25 @@ int fileReader (const char *filename){
 }
 
 
-   
 
 int encrypt(const char *filename) {
     FILE *file ;
     file = fopen(filename, "r+"); // "r+" erlaubt Lesen und Schreiben
-    
-
-   
     fputwc(3 , file); 
-
     fclose(file); 
     return 0;    
 }
 
 
+  
+
+
 int main() {
     const char *filename = "Rechnung.txt";
-
+    banner();
     if (fileExists(filename)) {
         printf("Die Datei '%s' existiert. Verschl\x81sselung wird gestartet...", filename);
+       
         char datei[1000];
         for (int i = 0 ; i <=2; ++i){
             printf("%c", '.');  
@@ -69,8 +92,9 @@ int main() {
         fileReader(filename);
         sleep(3);
         encrypt(filename);
+       
     } else {
-        printf("Die Datei '%s' existiert nicht. Bitte Überprüfe ob die Datei wirklich existiert oder falsch eingegeben wurde", filename);
+        printf("Die Datei '%s' existiert nicht. Bitte \x81berpr\x81fen.", filename);
     }
 
     return 0;
