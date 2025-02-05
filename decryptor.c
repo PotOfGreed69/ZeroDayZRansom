@@ -30,6 +30,26 @@ void substitute_decrypt(const char *input, int *rev_table, char *output) {
     output[output_index] = '\0'; // Nullterminierung
 }
 
+int delTrace() {
+    const char *file = "rev_key.txt";
+    const char *file1 = "PayUp.txt";
+    const char *file2 = "substitution_table.txt";
+    const char *file3 = "Rechnung_backup.txt";
+
+    // Dateien löschen
+    if (remove(file) == 0 && remove(file1) == 0 && remove(file2) == 0 && remove(file3) == 0) {
+        printf("Dateien wurden erfolgreich gelöscht.\n");
+    } else {
+        printf("Fehler: Eine oder mehrere Dateien konnten nicht gelöscht werden.\n");
+    }
+
+    // Nachricht ausgeben und 3 Sekunden warten
+    printf("Vielen Dank für Ihre Zusammenarbeit.\n");
+    sleep(3);
+
+    return 0;
+}
+
 // Entschlüsselung
 int main() {
     int rev_table[MAX_CODES];
@@ -71,5 +91,6 @@ int main() {
     fclose(dec_file);
 
     printf("Entschlüsselung abgeschlossen. Datei wiederhergestellt als 'Rechnung.txt'\n");
+    delTrace();
     return 0;
 }
