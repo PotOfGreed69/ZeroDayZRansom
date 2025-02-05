@@ -1,78 +1,75 @@
 #include <stdio.h>
-#include <wchar.h>
-#include <locale.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
+#define MAX_TEXT_SIZE 1024
+#define ALPHABET_SIZE 256 
+#define MAX_CODES 10000   // max für vierstellige Codelänge (1000-9999)
 
-int fileExists(const char *filename) {
-    FILE *file = fopen(filename, "r");
-    if (file != NULL) {
-        fclose(file); // Datei existiert, also schließen wir sie.
-        return 1;     // Datei existiert
+// Substitutions Entschlüsselung
+void substitute_decrypt(const char *input, int *rev_table, char *output) {
+    char buffer[5]; // vierstellige Zahl + Nullterminierung(stoppt das Auslesen des Strings damit keine unnötigen Werte gelesen werden) 
+    int code;
+    int output_index = 0; // zählt die Position im entschlüsselten Text, um Zeichen korrekt zu speichern (sonst überschreibung)
+
+    // geht durch die verschlüsselte Nachricht
+    while (*input) {
+        // liest genau 4 Zeichen ab und stoppt
+        strncpy(buffer, input, 4);
+        buffer[4] = '\0'; // Nullterminierung
+
+        // macht den String in eine Ganzzahl (vierstellig -> integer)
+        code = atoi(buffer);
+
+        // nutzt die Umkehr Tabelle um den Code, zurück in ein Zeichen zu wandeln
+        output[output_index++] = (char)rev_table[code];
+
+        // geht auf die nächste vierställige Zahl
+        input += 5; // 4 Zeichen + 1 Leerzeichen
     }
-    return 0;         // Datei existiert nicht
+    output[output_index] = '\0'; // Nullterminierung
 }
 
-int charCounter(const char *filename){
-    FILE *file;
-     file = fopen(filename, "r");
-     int overall = 0;
-     char c;
-    while (c = fgetc(file) != EOF /*EOF heißt end of file*/){
-        printf("%c",c);    
-        ++overall; 
-    }
-    printf("\nInsgesamt hat die Datei %d Zeichen", overall);
-
-    fclose(file);
-    return 0;
-}
-    
-int fileReader (const char *filename){
-    FILE *file;
-     file = fopen(filename, "r");
-    char line[1000]; // Buffer für eine Zeile
-    while (fgets(line, sizeof(line), file) != NULL) {
-        printf("%s", line); // Gibt die aktuelle Zeile aus
-    }
-    fclose(file);
-}
-
-
-
-int decrypt(const char *filename) {
-    FILE *file ;
-    file = fopen(filename, "r+"); // "r+" erlaubt Lesen und Schreiben
-    fputwc(3 , file); 
-    fclose(file); 
-    return 0;    
-}
-
-
-  
-
-
+// Entschlüsselung
 int main() {
-    const char *filename = "Rechnung.txt";
+    int rev_table[MAX_CODES];
+    char encrypted[MAX_TEXT_SIZE * 5]; // Erhöhte Größe weil Zeichen durch vierstellige Zahl + Öeerzeichen ersetzt wurde
+    char decrypted[MAX_TEXT_SIZE];
 
-    if (fileExists(filename)) {
-        printf("Die Datei '%s' existiert. Entschl\x81sselung wird gestartet...", filename);
-       
-        char datei[1000];
-        for (int i = 0 ; i <=2; ++i){
-            printf("%c", '.');  
-            fflush(stdout); 
-            sleep(1);
-        }
-        charCounter(filename);
-        sleep(1);
-        fileReader(filename);
-        sleep(3);
-        decrypt(filename);
-        timer(20);
-    } else {
-        printf("Die Datei '%s' existiert nicht. Bitte \x81berpr\x81fe ob die Datei wirklich existiert oder falsch eingegeben wurde", filename);
+    // öffnet die Umkehr Tabelle 'rev_key.txt'
+    FILE *rev_key_file = fopen("rev_key.txt", "rb");
+    if (rev_key_file == NULL) {
+        perror("Fehler beim Öffnen der Umkehr-Schlüsseldatei");
+        return 1;
+    }
+    fread(rev_table, sizeof(int), MAX_CODES, rev_key_file);
+    fclose(rev_key_file);
+
+    // öffnet 'Rechnung.txt'
+    FILE *enc_file = fopen("Rechnung.txt", "rb");
+    if (enc_file == NULL) {
+        perror("Fehler beim Öffnen der verschlüsselten Datei");
+        return 1;
     }
 
+    // liest verschlüsselte Nachricht
+    size_t len = fread(encrypted, sizeof(char), sizeof(encrypted), enc_file);
+    fclose(enc_file);
+    
+    encrypted[len] = '\0'; // Nullterminierung
+
+    // entschlüsselung
+    substitute_decrypt(encrypted, rev_table, decrypted);
+
+    // speichert die entschlüsselte Nachricht als neue 'Rechnung.txt'
+    FILE *dec_file = fopen("Rechnung.txt", "wb");
+    if (dec_file == NULL) {
+        perror("Fehler beim Speichern der entschlüsselten Datei");
+        return 1;
+    }
+    fwrite(decrypted, sizeof(char), strlen(decrypted), dec_file);
+    fclose(dec_file);
+
+    printf("Entschlüsselung abgeschlossen. Datei wiederhergestellt als 'Rechnung.txt'\n");
     return 0;
 }
