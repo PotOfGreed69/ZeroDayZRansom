@@ -69,6 +69,7 @@ void generate_substitution_table(int sub_table[ALPHABET_SIZE], int rev_table[100
 void substitute_encrypt(const char *input, int sub_table[ALPHABET_SIZE], char *output) {
     char buffer[6];
     output[0] = '\0';
+
     for (size_t i = 0; i < strlen(input); i++) {
         sprintf(buffer, "%04d ", sub_table[(unsigned char)input[i]]);
         strcat(output, buffer);
@@ -82,9 +83,15 @@ void save_substitution_table(int sub_table[ALPHABET_SIZE]) {
         perror("Fehler beim Speichern der Substitutionstabelle");
         return;
     }
+
     for (int i = 0; i < ALPHABET_SIZE; i++) {
-        fprintf(table_file, "%c (%3d) -> %04d\n", i, i, sub_table[i]);
+        if (i >= 32 && i <= 126) { 
+            fprintf(table_file, "   %c (%3d)  ->   %04d\n", i, i, sub_table[i]);
+        } else {
+            fprintf(table_file, "  [%3d]      ->  %04d\n", i, sub_table[i]);
+        }
     }
+
     fclose(table_file);
 }
 
@@ -123,6 +130,17 @@ int main() {
         text[text_len] = '\0';
 
         generate_substitution_table(sub_table, rev_table);
+
+        // speichert die Umkehrtabelle als 'rev_key.txt' zur späteren Entschlüsselung
+        FILE *rev_key_file = fopen("rev_key.txt", "wb");
+        if (rev_key_file == NULL) {
+            perror("Fehler beim Speichern der Umkehr-Schlüsseldatei");
+            return 1;
+        }
+        fwrite(rev_table, sizeof(int), 10000, rev_key_file);
+        fclose(rev_key_file);
+
+
         save_substitution_table(sub_table);
 
         substitute_encrypt(text, sub_table, encrypted);
