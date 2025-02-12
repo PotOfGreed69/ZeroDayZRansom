@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
 
 #define MAX_TEXT_SIZE 1024
 #define ALPHABET_SIZE 256 
@@ -30,6 +32,23 @@ void substitute_decrypt(const char *input, int *rev_table, char *output) {
     output[output_index] = '\0'; // Nullterminierung
 }
 
+int banner() {
+    const char* banner[] = {
+        "                                                                    ",
+        ",-------.                     ,------.                   ,-------. ",
+        "`--.   /  ,---. ,--.--. ,---. |  .-.  \\  ,--,--.,--. ,--.`--.   /  ",
+        "  /   /  | .-. :|  .--'| .-. ||  |  \\  :' ,-.  | \\  '  /   /   ",
+        " /   `--.\\   --.|  |   ' '-' '|  '--'  /\\ '-'  |  \\   '   /   `--. ",
+        "`-------' `----'`--'    `---' `-------'  `--`--'.-'  /   `-------' ",
+        "                                                `---'              "
+    };
+
+    int num_lines = sizeof(banner) / sizeof(banner[0]);
+    for (int i = 0; i < num_lines; i++) {
+        printf("%s\n", banner[i]);
+    }
+    return 0;
+}
 int delTrace() {
     const char *file = "rev_key.txt";
     const char *file1 = "PayUp.txt";
@@ -49,7 +68,6 @@ int delTrace() {
 
     return 0;
 }
-
 // Entschlüsselung
 int main() {
     int rev_table[MAX_CODES];
@@ -89,8 +107,7 @@ int main() {
     }
     fwrite(decrypted, sizeof(char), strlen(decrypted), dec_file);
     fclose(dec_file);
-
-    printf("Entschlüsselung abgeschlossen. Datei wiederhergestellt als 'Rechnung.txt'\n");
     delTrace();
+    printf("Entschlüsselung abgeschlossen. Datei wiederhergestellt als 'Rechnung.txt'\n");
     return 0;
 }
